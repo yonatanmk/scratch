@@ -12,7 +12,7 @@ while true
             puts "THIS IS A LOVELY CONVERSATION!"
         end
     elsif speak == speak.upcase
-        year = rand(1930.. 1981)
+        year = rand(1930.. 1980)
         puts "NO, NOT SINCE #{year}!"
         count = 0
     else
