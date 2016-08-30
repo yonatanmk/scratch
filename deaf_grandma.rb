@@ -6,8 +6,8 @@ while true
     if speak == "BYE"
         count +=1
         if count == 3
-            puts "I'VE ENJOYED OUR CONVERSATION! PlEASE VISIT SOME MORE! I'M SO LONELY!"
-            break    
+            puts " GOODBYE! I'VE ENJOYED OUR CONVERSATION! PlEASE VISIT SOME MORE! I'M SO LONELY!"
+            break
         else
             puts "THIS IS A LOVELY CONVERSATION!"
         end
