@@ -23,6 +23,12 @@ def decryption code, number
     end
     return decrypted_code
 end
+
+#bonus
+% 52
+make sure encrypted string contains only letters
+only caps 65-90
+lowercase 97-122
 #------------------------------------------------------------------------------------
 puts "A Caesar Cipher is a simple encryption method implemented by shifting the characters down a certain number"
 puts "Please enter a short phrase to be encrypted via a Caesar Cipher"
