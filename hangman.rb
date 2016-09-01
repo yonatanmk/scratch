@@ -189,7 +189,7 @@ while true
     #puts                                                       #EDIT LATERRRRRRRRRRRR
     puts "That letter was not in the hidden word."
     if missed_letters.length == hangman_pics.length - 1
-      puts "G A M E O V E R"
+      puts "G A M E  O V E R"
       puts "You have run out of guesses!"
       puts "You had #{missed_letters.length} wrong guess#{"es" unless missed_letters.length == 1} and #{word_letters.length} correct guess#{"es" unless word_letters.length == 1}."
       puts "The word was #{hidden_word}."
