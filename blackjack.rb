@@ -66,20 +66,26 @@ class Deck
 end
 
 class Player
-  attr_accessor :name, :hand
+  attr_accessor :name, :hand, :money, :wager
 
-  def initialize name, card1, card2
+  def initialize name, money
     self.name = name
+    self.wager = nil
+    self.hand = ["empty"]
+    self.money = money
+  end
+
+  def new_hand card1, card2
     self.hand = [card1, card2]
   end
 
   def hit_me card
-    hand << card
+    self.hand << card
   end
 
   def hand_total
     total = 0
-    hand.each do |x|
+    self.hand.each do |x|
       if x == "A"
         total += 1
       elsif x == "J" or x == "Q" or x == "K"
@@ -89,6 +95,25 @@ class Player
       end
     end
     return total
+  end
+
+  def get_wager
+    while true
+      puts "How much would you like to wager?"
+      wager = gets.chomp
+      if wager.to_i.to_s == wager
+        if wager.to_i < 5
+          puts "The minimum wager is $5."
+        elsif wager.to_i > self.money
+          puts "You cannot afford that wager."
+        else
+          self.wager = wager.to_i
+          break
+        end
+      else
+        puts "Please enter a number with no symbols, spaces, or letters."
+      end
+    end
   end
 
 end
@@ -152,33 +177,15 @@ def replay
   end
 end
 
-def get_wager money
-  while true
-    puts "How much would you like to wager?"
-    wager = gets.chomp
-    if wager.to_i.to_s == wager
-      if wager.to_i < 5
-        puts "The minimum wager is $5."
-      elsif wager.to_i > money
-        puts "You cannot afford that wager."
-      else
-        return wager.to_i
-      end
-    else
-      puts "Please enter a number with no symbols, spaces, or letters."
-    end
-  end
-end
 #_______________________________________________________
 deck = Deck.new
-money = 100
 
 system "clear"
 
 puts "Welcome to Blackjack!"
 puts
 puts "What is your name?"
-name = gets.chomp
+player = Player.new gets.chomp, 100
 puts
 
 while true
@@ -191,15 +198,17 @@ while true
 
   puts "There are currently #{deck.deck_remaining deck.cards_remaining} cards in the deck."
   puts "The current running card count is #{deck.card_count deck.cards_remaining}."
-  player = Player.new name, deck.draw_card, deck.draw_card
+
+  player.new_hand deck.draw_card, deck.draw_card
   dealer = Dealer.new deck.draw_card
   game_over = false
   outcome = "" #can be either "win" or "lose"
   sleep_counter = false
 
-  puts "You have $#{money}."
-  bet = get_wager money
-  puts "You bet $#{bet}."
+
+  puts "You have $#{player.money}."
+  player.get_wager
+  puts "You bet $#{player.wager}."
   puts
   sleep(0.5)
 
@@ -301,16 +310,16 @@ while true
   puts
   puts "The round is over."
   if outcome == "win"
-    puts "Congratulations! You've won $#{bet}."
-    money += bet
+    puts "Congratulations! You've won $#{player.wager}."
+    player.money += player.wager
   elsif outcome == "tie"
   else
-    puts "You've lost $#{bet}."
-    money -= bet
+    puts "You've lost $#{player.wager}."
+    player.money -= player.wager
   end
-  puts "You now have $#{money}."
+  puts "You now have $#{player.money}."
 
-  if money == 0
+  if player.money == 0
     puts "You are out of money. Please leave the casino."
     puts "Ending the game..."
     break
