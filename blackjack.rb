@@ -66,14 +66,10 @@ class Deck
 end
 
 class Player
-  attr_accessor :name, :hand, :money
+  attr_accessor :name, :hand
 
-  def initialize name, money
+  def initialize name, card1, card2
     self.name = name
-    self.money = money
-  end
-
-  def new_hand card1, card2
     self.hand = [card1, card2]
   end
 
@@ -195,8 +191,7 @@ while true
 
   puts "There are currently #{deck.deck_remaining deck.cards_remaining} cards in the deck."
   puts "The current running card count is #{deck.card_count deck.cards_remaining}."
-  player = Player.new name, money
-  player.new_hand deck.draw_card, deck.draw_card
+  player = Player.new name, deck.draw_card, deck.draw_card
   dealer = Dealer.new deck.draw_card
   game_over = false
   outcome = "" #can be either "win" or "lose"
