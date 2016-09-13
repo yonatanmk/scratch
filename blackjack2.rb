@@ -249,7 +249,7 @@ puts
 while true
   system "clear"
 
-  if (deck.deck_remaining deck.cards_remaining) < 13
+  if deck.deck_remaining(deck.cards_remaining) < 52
     deck = Deck.new
     puts "The deck has been reshuffled."
   end

@@ -1,6 +1,6 @@
-require 'deck.rb'
-require 'dealer.rb'
-require 'player.rb'
+require './deck.rb'
+require './dealer.rb'
+require './player.rb'
 
 class Game
   attr_accessor :player, :dealer
@@ -83,7 +83,7 @@ class Game
       dealer_wins(bet)
     elsif @dealer.hidden_score < @player.score
       player_wins(bet)
-    elsif @dealer.hidden_score == @player.score 
+    elsif @dealer.hidden_score == @player.score
       puts "Tie"
     end
   end
@@ -91,7 +91,7 @@ class Game
   def dealer_wins(bet)
     player_final_hand
     dealer_final_hand
-    puts "Player busts, Dealer wins" 
+    puts "Player busts, Dealer wins"
     @dealer.bank_roll += bet
     @player.bank_roll -= bet
     puts "player loses $#{bet}, has $#{@player.bank_roll} remaining"
@@ -150,3 +150,10 @@ class Game
     end
   end
 end
+#_______________________________________________________________________________
+deck = DeckOfCards.new
+player = Player.new 100
+dealer = Dealer.new 100, deck
+game = Game.new dealer, player
+
+game.start
