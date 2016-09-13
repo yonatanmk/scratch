@@ -49,9 +49,9 @@ class Deck
       end
     end
     if running_count > 0
-      return "+#{running_count}"
+      return "+#{(running_count.to_f / ((deck_remaining self.cards_remaining).to_f / 52)).round(2)}"
     else
-      return "#{running_count}"
+      return "#{(running_count.to_f / ((deck_remaining self.cards_remaining).to_f / 52)).round(2)}"
     end
   end
 
@@ -66,11 +66,12 @@ class Deck
 end
 
 class Player
-  attr_accessor :name, :money, :wager, :hand_list
+  attr_accessor :name, :money, :wager, :wager_count, :hand_list
 
   def initialize name, money
     self.name = name
     self.wager = nil
+    self.wager_count = 0
     self.hand_list = [[], [], [], []]
     self.money = money
   end
@@ -121,7 +122,7 @@ class Player
       return false
     elsif hand[0] == hand[1]
       return true
-    elsif ["10", "J", "Q", "K"].include? hand[0] and ["10", "J", "Q", "K"].include? hand[0]
+    elsif ["10", "J", "Q", "K"].include? hand[0] and ["10", "J", "Q", "K"].include? hand[1]
       return true
     else
       return false
@@ -152,8 +153,13 @@ class Player
         break
       elsif player_action == "3" or player_action == "split"
         if self.check_split hand
-          return "3"
-          break
+          if (self.wager * (wager_count + 1)) > self.money
+            puts "You cannot afford to split your hand."
+            puts "Please select option 1 or 2."
+          else
+            return "3"
+            break
+          end
         else
           puts "Please select option 1 or 2."
         end
@@ -243,7 +249,7 @@ puts
 while true
   system "clear"
 
-  if (deck.deck_remaining deck.cards_remaining) < 52
+  if (deck.deck_remaining deck.cards_remaining) < 13
     deck = Deck.new
     puts "The deck has been reshuffled."
   end
@@ -251,14 +257,14 @@ while true
   puts "There are currently #{deck.deck_remaining deck.cards_remaining} cards in the deck."
   puts "The current running card count is #{deck.card_count deck.cards_remaining}."
 
-  player.new_hand "A", "A"                                #change "A" to deck.draw_card x2
-  dealer = Dealer.new "6"                   #change "K" to deck.draw_card x1
+  player.new_hand deck.draw_card, deck.draw_card               #change for debugging
+  dealer = Dealer.new deck.draw_card                            #change for debugging
   d_over_21 = false
   sleep_counter = false
 
-
   puts "You have $#{player.money}."
   player.get_wager
+  player.wager_count = 1
   puts "You bet $#{player.wager}."
   sleep(0.5)
 
@@ -298,6 +304,8 @@ while true
           elsif player_action == "3"
             puts "You decide to split your hand and add $#{player.wager} to your wager"
             player.split_hand hand
+            player.wager_count += 1
+            puts player.wager_count
           else
             puts "You have decided to stay."
             sleep(0.5)
