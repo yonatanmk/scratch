@@ -1,7 +1,7 @@
 class Deck
   attr_accessor :cards_remaining
 
-  def initialize    #Using 2 decks
+  def initialize    #Using 6 decks
     self.cards_remaining = {
       "2" => 24,
       "3" => 24,
