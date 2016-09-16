@@ -1,223 +1,79 @@
-class Deck
-  attr_accessor :cards_remaining
-
-  def initialize    #Using 2 decks
-    self.cards_remaining = {
-      "2" => 24,
-      "3" => 24,
-      "4" => 24,
-      "5" => 24,
-      "6" => 24,
-      "7" => 24,
-      "8" => 24,
-      "9" => 24,
-      "10" => 24,
-      "J" => 24,
-      "Q" => 24,
-      "K" => 24,
-      "A" => 24,
-    }
+class Team
+  attr_reader :name
+  attr_accessor :season_score
+  def initialize name
+    @name = name
+    @season_score = 0
   end
-
-  def draw_card
-    while true
-      card_num = rand(1..13).to_s
-      if card_num == "1"
-        card_num = "A"
-      elsif card_num == "11"
-        card_num = "J"
-      elsif card_num == "12"
-        card_num = "Q"
-      elsif card_num == "13"
-        card_num = "K"
-      end
-      unless cards_remaining[card_num] == 0
-        cards_remaining[card_num] -= 1
-        return card_num
-      end
-    end
-  end
-
-  def card_count cards_remaining
-    running_count = 0
-    positive_card_values = ["10", "J", "Q", "K", "A"]
-    cards_remaining.each do |x, y|
-      if positive_card_values.include? x
-        running_count += y
-      elsif x.to_i <= 6
-        running_count -= y
-      end
-    end
-    if running_count > 0
-      return "+#{(running_count.to_f / ((deck_remaining self.cards_remaining).to_f / 52)).round(2)}"
-    else
-      return "#{(running_count.to_f / ((deck_remaining self.cards_remaining).to_f / 52)).round(2)}"
-    end
-  end
-
-  def deck_remaining cards_remaining
-    counter = 0
-    cards_remaining.each do |x, y|
-      counter += y
-    end
-    return counter
-  end
-
 end
-#__________________________________________________________
-deck = Deck.new
 
-puts deck.card_count deck.cards_remaining
+class Season
+  attr_reader :roster
+  def initialize
+    @roster = {}
+  end
 
-puts deck.draw_card
+  def add_team name, score
+    @roster.store(name.downcase, (Team.new name.split.map(&:capitalize).join(" ")))
+    @roster.each do |key, value|
+      if key == name.downcase
+        value.season_score += score
+      end
+    end
+  end
 
-puts deck.card_count deck.cards_remaining
+  def organize_roster
+    team_rankings = []
+    @roster.each do |key, value|
+      team_rankings << value
+    end
+    team_rankings.sort_by!{|team| team.season_score}
+    team_rankings.reverse!
+    team_rankings.length.times do
+      team_rankings.each do |team|
+        if team_rankings[team_rankings.index(team) + 1].class.to_s != "NilClass" and team_rankings[team_rankings.index(team) + 1].season_score == team.season_score
+          if team.name > team_rankings[team_rankings.index(team) + 1].name
+            team_rankings.insert(team_rankings.index(team), team_rankings.delete_at(team_rankings.index(team) + 1))
+          end
+        end
+      end
+    end
+    @roster = {}
+    team_rankings.each do |team|
+      @roster.store(team.name.downcase, team)
+    end
+  end
 
-puts deck.draw_card
+  def display_roster
+    @roster.each do |key, team|
+      if team.name.length > 7
+        puts "#{team.name}\t#{team.season_score}"
+      else
+        puts "#{team.name}\t\t#{team.season_score}"
+      end
+    end
+  end
+end
+#________________________________________________________________
+season = Season.new
 
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
+season.add_team "Yankees", 3
+season.add_team "Red Sox", 7
+season.add_team "Cardinals", 4
+season.add_team "Mets", 3
+season.add_team "Diamondbacks", 5
+season.add_team "Astros", 1
+season.add_team "White Sox", 3
 
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
+season.roster.each do |key, team|
+  if team.name.length > 7
+    puts "#{team.name}\t#{team.season_score}"
+  else
+    puts "#{team.name}\t\t#{team.season_score}"
+  end
+end
+puts
 
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
+season.organize_roster
 
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
-puts deck.draw_card
-
-puts deck.card_count deck.cards_remaining
+season.display_roster

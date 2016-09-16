@@ -87,6 +87,7 @@ class Season
   end
 
   def display_roster
+    puts "Team Name\tScore"
     @roster.each do |key, team|
       if team.name.length > 7
         puts "#{team.name}\t#{team.season_score}"
@@ -127,6 +128,7 @@ def action_filter
 end
 
 #_________________________________________
+system "clear"
 season = Season.new
 
 while true
@@ -134,14 +136,17 @@ while true
   puts "1. Input Game Results."
   puts "2. View League Rankings"
   action = action_filter
+  puts
   if action == "1"
     puts "Please enter the final scores of a game."
     season.input_processor
+    puts
     season.organize_roster
     season.display_roster
+    puts
   elsif action == "2"
-    season.organize_roster
     season.display_roster
+    puts
   end
   unless replay
     break
