@@ -112,7 +112,8 @@ def draw_board hangman_pics, missed_letters, word_letters, hidden_word
     end
     char_pos += 1
   end
-  blank.each_char do |x|
+  print blank[0].upcase + " "
+  blank[1...hidden_word.length].each_char do |x|
     print x + " "
   end
   puts
@@ -163,10 +164,21 @@ word_letters = ""
 game_over = false
 win_count = 0
 lose_count = 0
+wrong_guess = false
+guess = ""
 
 puts "Welcome to Hangman!!!"
 puts
 while true
+  system "clear"
+  puts "Welcome to Hangman!!!"
+  if wrong_guess == true
+    puts "The letter #{guess.upcase} is not in the hidden word."
+    wrong_guess = false
+  else
+    puts
+  end
+  puts
   draw_board hangman_pics, missed_letters, word_letters, hidden_word
   guess = get_guess word_letters, missed_letters
 
@@ -185,9 +197,8 @@ while true
     end
 
   else
-    missed_letters << guess
-    #puts                                                       #EDIT LATERRRRRRRRRRRR
-    puts "That letter was not in the hidden word."
+    missed_letters << guess.upcase
+    wrong_guess = true
     if missed_letters.length == hangman_pics.length - 1
       puts "G A M E  O V E R"
       puts "You have run out of guesses!"
