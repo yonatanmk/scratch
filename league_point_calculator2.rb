@@ -97,6 +97,10 @@ class Season
     end
   end
 
+  def delete_team
+    team = gets.chomp
+  end
+
 end
 #________________________________________
 def replay
@@ -121,8 +125,9 @@ def action_filter
       return "1"
     elsif action == "2"
       return "2"
+    elsif action == "3"
     else
-      puts "Please enter 1 or 2."
+      puts "Please enter 1, 2, or 3."
     end
   end
 end
@@ -134,15 +139,22 @@ season = Season.new
 while true
   puts "What would you like to do?"
   puts "1. Input Game Results."
-  puts "2. View League Rankings"
+  puts "2. View League Rankings."
+  puts "3. Delete A Team From the Roster."
   action = action_filter
+  puts
   if action == "1"
     puts "Please enter the final scores of a game."
     season.input_processor
+    puts
     season.organize_roster
     season.display_roster
+    puts
   elsif action == "2"
     season.display_roster
+    puts
+  elsif action == "3"
+
   end
   unless replay
     break

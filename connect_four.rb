@@ -82,28 +82,48 @@ class Board
   end
 end
 #_________________________________________________________________
+def replay
+  while true
+    puts "Do you want to play again? (yes or no)"
+    play_again_answer = gets.chomp.downcase
+    puts
+    if play_again_answer == "y" || play_again_answer == "yes"
+      puts "Starting a new game..."
+      return true
+    elsif play_again_answer == "n" || play_again_answer == "no"
+      puts "Ending the game..."
+      return false
+    else
+      puts "Please only enter yes or no."
+    end
+  end
+end
+#_________________________________________________________________
 board = Board.new
 turn = 0
 
-
 while true
+  until board.check_win
+    system "clear"
+    puts "   Welcome to Connect Four"
+    puts
+    board.print_board
+    player = "O"
+    player = "X" if turn % 2 == 0
+    board.play(player)
+    turn += 1
+  end
+
   system "clear"
-  puts "Welcome to Connect Four"
+  puts "   Welcome to Connect Four"
   puts
-
   board.print_board
+  puts "Player #{player} wins!"
 
-  player = "O"
-  player = "X" if turn % 2 == 0
-
-  board.play(player)
-  turn += 1
-
-  if board.check_win
+  if replay
+    board = Board.new
+    turn = 0
+  else
     break
   end
 end
-
-system "clear"
-board.print_board
-puts "Player #{player} wins!"
