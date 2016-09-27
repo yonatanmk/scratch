@@ -102,6 +102,7 @@ end
 while true
   board = Board.new
   turn = 0
+  tie = false
   until board.check_win
     system "clear"
     puts "   Welcome to Connect Four"
@@ -111,13 +112,22 @@ while true
     player = "X" if turn % 2 == 0
     board.play(player)
     turn += 1
+
+    if turn == 42
+      tie = true
+      break
+    end
   end
 
   system "clear"
   puts "   Welcome to Connect Four"
   puts
   board.print_board
-  puts "Player #{player} wins!"
+  if tie == true
+    puts "It's a tie."
+  else
+    puts "Player #{player} wins!"
+  end
 
   unless replay
     break
