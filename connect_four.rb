@@ -99,10 +99,9 @@ def replay
   end
 end
 #_________________________________________________________________
-board = Board.new
-turn = 0
-
 while true
+  board = Board.new
+  turn = 0
   until board.check_win
     system "clear"
     puts "   Welcome to Connect Four"
@@ -120,10 +119,7 @@ while true
   board.print_board
   puts "Player #{player} wins!"
 
-  if replay
-    board = Board.new
-    turn = 0
-  else
+  unless replay
     break
   end
 end

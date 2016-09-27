@@ -15,6 +15,12 @@ class Board
       [[" "," "], [" "," "], [" "," "], [" "," "], [" "," "], [" "," "], [" "," "], [" "," "], [" "," "], [" "," "]],
     ]
     @lines = '   -------------------------------------'
+    @a_hits = 0
+    @b_hits = 0
+    @d_hits = 0
+    @s_hits = 0
+    @p_hits = 0
+
 
     #place boats on the board
     #aircraft carrer
@@ -177,20 +183,79 @@ class Board
       elsif @board[y-1][x-1][0] != " "
         puts "You've already guessed that location"
       else
-        if @board[y-1][x - 1][1] != " "
+        if @board[y-1][x - 1][1] == "A"
           @board[y-1][x - 1][0] = "O"
-          return true
+          @a_hits += 1
+          if @a_hits == 5
+            @board.each do |row|
+              row.each do |x|
+                x[0] = x[1] if x[1] == "A"
+              end
+            end
+            return "a_sink"
+          else
+            return "hit"
+          end
+        elsif @board[y-1][x - 1][1] == "B"
+          @board[y-1][x - 1][0] = "O"
+          @b_hits += 1
+          if @b_hits == 4
+            @board.each do |row|
+              row.each do |x|
+                x[0] = x[1] if x[1] == "B"
+              end
+            end
+            return "b_sink"
+          else
+            return "hit"
+          end
+        elsif @board[y-1][x - 1][1] == "D"
+          @board[y-1][x - 1][0] = "O"
+          @d_hits += 1
+          if @d_hits == 3
+            @board.each do |row|
+              row.each do |x|
+                x[0] = x[1] if x[1] == "D"
+              end
+            end
+            return "d_sink"
+          else
+            return "hit"
+          end
+        elsif @board[y-1][x - 1][1] == "S"
+          @board[y-1][x - 1][0] = "O"
+          @s_hits += 1
+          if @s_hits == 3
+            @board.each do |row|
+              row.each do |x|
+                x[0] = x[1] if x[1] == "S"
+              end
+            end
+            return "s_sink"
+          else
+            return "hit"
+          end
+        elsif @board[y-1][x - 1][1] == "P"
+          @board[y-1][x - 1][0] = "O"
+          @p_hits += 1
+          if @p_hits == 2
+            @board.each do |row|
+              row.each do |x|
+                x[0] = x[1] if x[1] == "P"
+              end
+            end
+            return "p_sink"
+          else
+            return "hit"
+          end
         else
           @board[y-1][x - 1][0] = "X"
-          return false
+          return "miss"
         end
       end
     end
   end
 
-  def check_win
-
-  end
 end
 
 class Player
@@ -204,6 +269,10 @@ class Player
     @hits += 1
   end
 
+  def reset_hits
+    @hits = 0
+  end
+
   def check_win
     if @hits == 17
       return true
@@ -214,15 +283,29 @@ class Player
 end
 
 #_________________________________________________________________
+def replay
+  while true
+    puts "Do you want to play again? (yes or no)"
+    play_again_answer = gets.chomp.downcase
+    puts
+    if play_again_answer == "y" || play_again_answer == "yes"
+      puts "Starting a new game..."
+      return true
+    elsif play_again_answer == "n" || play_again_answer == "no"
+      puts "Ending the game..."
+      return false
+    else
+      puts "Please only enter yes or no."
+    end
+  end
+end
+#_________________________________________________________________
 system "clear"
-turn = 0
 
 puts "Welcome to Battleship"
 puts "Player 1, what's your name?"
 player1 = Player.new gets.chomp.capitalize
-board1 = Board.new
 puts "Player 2, what's your name?"
-
 while true
   player2_name = gets.chomp.capitalize
   if player2_name == player1.name
@@ -232,47 +315,95 @@ while true
   end
 end
 player2 = Player.new player2_name
-board2 = Board.new
-player = player1
 
-until player.check_win
+while true
+  player = player1
+  board1 = Board.new
+  board2 = Board.new
+  turn = 0
+
+  until player.check_win
+    system "clear"
+    puts "           B A T T L E S H I P"
+    puts "#{player1.name}: #{player1.hits}"                #debugging
+    puts "#{player2.name}: #{player2.hits}"                #debugging
+
+    player = player2
+    player = player1 if turn % 2 == 0
+    board = board2
+    board = board1 if turn % 2 == 0
+
+    puts "#{player.name}'s turn."
+    puts
+
+    board.boat_locations                                  #debugging
+    board.print_board
+
+    attack = board.play(player.name, board)
+
+    if attack == "hit"
+      player.update_hits
+      system "clear"
+      puts "           B A T T L E S H I P"
+      puts "#{player.name} hits a ship."
+      puts
+      board.print_board
+    elsif attack == "a_sink"
+      player.update_hits
+      system "clear"
+      puts "           B A T T L E S H I P"
+      puts "#{player.name} sunk the opponent's Aircraft Carrier."
+      puts
+      board.print_board
+    elsif attack == "b_sink"
+      player.update_hits
+      system "clear"
+      puts "           B A T T L E S H I P"
+      puts "#{player.name} sunk the opponent's Battleship."
+      puts
+      board.print_board
+    elsif attack == "d_sink"
+      player.update_hits
+      system "clear"
+      puts "           B A T T L E S H I P"
+      puts "#{player.name} sunk the opponent's Destroyer."
+      puts
+      board.print_board
+    elsif attack == "s_sink"
+      player.update_hits
+      system "clear"
+      puts "           B A T T L E S H I P"
+      puts "#{player.name} sunk the opponent's Submarine."
+      puts
+      board.print_board
+    elsif attack == "p_sink"
+      player.update_hits
+      system "clear"
+      puts "           B A T T L E S H I P"
+      puts "#{player.name} sunk the opponent's Patrol Boat."
+      puts
+      board.print_board
+    else
+      system "clear"
+      puts "           B A T T L E S H I P"
+      puts "#{player.name} misses."
+      puts
+      board.print_board
+    end
+    gets
+    turn += 1
+  end
+
   system "clear"
   puts "           B A T T L E S H I P"
-  #puts "#{player1.name}: #{player1.hits}"                #debugging
-  #puts "#{player2.name}: #{player2.hits}"                #debugging
-
-
-  player = player2
-  player = player1 if turn % 2 == 0
-  board = board2
-  board = board1 if turn % 2 == 0
-
-  puts "#{player.name}'s turn."
+  puts "#{player.name} wins!"
   puts
-
-  #board.boat_locations                                  #debugging
   board.print_board
 
-  if board.play(player.name, board)
-    player.update_hits
-    system "clear"
-    puts "           B A T T L E S H I P"
-    puts "#{player.name} hits a ship."
-    puts
-    board.print_board
+  if replay
+    player1.reset_hits
+    player2.reset_hits
   else
-    system "clear"
-    puts "           B A T T L E S H I P"
-    puts "#{player.name} misses."
-    puts
-    board.print_board
+    break
   end
-  gets
-  turn += 1
 end
-
-system "clear"
-puts "           B A T T L E S H I P"
-puts "#{player.name} wins!"
-puts
-board.print_board
