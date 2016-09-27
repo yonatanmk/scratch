@@ -49,9 +49,9 @@ class Board
   end
 
   def check_win
-    @board.reverse.each do |row|      #checking for horzontal wins
+    @board.reverse.each do |row_num|      #checking for horzontal wins
       (0..3).each do |column|
-        if row[column].values != [" "] && row[column].values == row[column + 1].values && row[column].values == row[column + 2].values && row[column].values == row[column + 3].values
+        if row_num[column].values != [" "] && row_num[column].values == row_num[column + 1].values && row_num[column].values == row_num[column + 2].values && row_num[column].values == row_num[column + 3].values
           return true
         end
       end
