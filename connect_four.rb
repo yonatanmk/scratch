@@ -28,7 +28,7 @@ class Board
   def play(player)
     end_play = false
     puts "Player #{player}, where would you like to go? (1-7)"
-    while true
+    until end_play == true
       column = gets.chomp
       if not ["1","2","3","4","5","6","7"].include?(column)
         puts "That is not an option."
@@ -45,7 +45,6 @@ class Board
           break if end_play == true
         end
       end
-      break if end_play == true
     end
   end
 
