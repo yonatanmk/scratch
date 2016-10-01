@@ -1,3 +1,7 @@
+require_relative 'replay.rb'
+
+extend Replay
+
 class Board
   attr_reader :board
   def initialize
@@ -80,24 +84,7 @@ class Board
     return false
   end
 end
-#_________________________________________________________________
-def replay
-  while true
-    puts "Do you want to play again? (yes or no)"
-    play_again_answer = gets.chomp.downcase
-    puts
-    if play_again_answer == "y" || play_again_answer == "yes"
-      puts "Starting a new game..."
-      return true
-    elsif play_again_answer == "n" || play_again_answer == "no"
-      puts "Ending the game..."
-      return false
-    else
-      puts "Please only enter yes or no."
-    end
-  end
-end
-#_________________________________________________________________
+
 while true
   board = Board.new
   turn = 0
