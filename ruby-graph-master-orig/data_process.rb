@@ -1,0 +1,38 @@
+require 'Pry'
+
+class DataProcess
+  attr_accessor :data
+
+  def initialize(file_path)
+    self.data = File.read('data.txt')
+  end
+
+  def array
+    # Break into array, e.g. [["Jan", 1], ["Feb", 19], etc]
+    @array ||= self.data.split(/\n/).reject{ |s| s.nil? || s == "" }.map{ |s| s.strip.split(/\s+/) }
+    @array.each_index do |date|
+      @array[date][0] = @array[date][0] + " " + @array[date][1]
+      @array[date].delete_at(1) unless @array[date][2] == nil
+    end
+    #Pry.start(binding)
+  end
+
+  def hash
+    # Create hash to work with, e.g. {"Jan" => 1, "Feb" => 2, etc}
+    @hash ||= Hash[self.array].inject(Hash.new){ |h, a| h[a[0]] = a[1].to_i; h }
+  end
+
+  def max
+    @max ||= self.hash.values.max
+  end
+
+  def scale
+    GraphDraw::HEIGHT / self.max.to_f
+  end
+
+  def scaled_hash
+    # Calculate scaled values
+    @scaled_hash ||= self.hash.inject(Hash.new){ |h, a| h[a[0]] = (self.scale * a[1]).round; h }
+  end
+
+end
