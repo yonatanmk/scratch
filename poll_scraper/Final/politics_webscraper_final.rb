@@ -98,12 +98,50 @@ while true
       puts "7. Back"
       action2 = action_filter7
       if action2 == "1"
+        while true
+          system 'clear'
+          puts 'Election 2016 Polls'
+          puts "Graph Poll Results within a State"
+          puts
+          puts "Please enter a state."
+          puts 'Type "back" if you want to go back.'
+          state = get_state(data)
+          if state == "back"
+            break
+          else
+            graph.create_state_graph_data(state)
+            graph.draw("state", "results")
+            gets
+          end
+        end
       elsif action2 == "2"
+        while true
+          system 'clear'
+          puts 'Election 2016 Polls'
+          puts "Graph Poll Spread within a State"
+          puts
+          puts "Please enter a state."
+          puts 'Type "back" if you want to go back.'
+          state = get_state(data)
+          if state == "back"
+            break
+          else
+            graph.create_state_graph_data(state)
+            graph.draw("state", "spread")
+            gets
+          end
+        end
       elsif action2 == "3"
+        graph.draw("swing_state", "results")
+        gets
       elsif action2 == "4"
+        graph.draw("swing_state", "spread")
+        gets
       elsif action2 == "5"
+        graph.draw("general", "results")
+        gets
       elsif action2 == "6"
-        graph.draw_general
+        graph.draw("general", "spread")
         gets
       else
         break
