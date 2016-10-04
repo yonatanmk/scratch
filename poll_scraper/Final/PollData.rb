@@ -3,12 +3,11 @@ require 'Nokogiri'
 require 'Pry'
 
 class PollData
-  attr_reader :page, :parse_page, :date_array, :race_array, :pollster_array, :results_array, :spread_array, :poll_list, :general_graph_data
-  attr_reader :clinton_scores, :trump_scores, :spread_list, :swing_states
+  attr_reader :page, :parse_page, :date_array, :race_array, :pollster_array, :results_array, :spread_array, :poll_list, :swing_states
 
   def initialize
     @page = HTTParty.get('http://www.realclearpolitics.com/epolls/latest_polls/president/')
-    @parse_page = Nokogiri::HTML(page)
+    @parse_page = Nokogiri::HTML(@page)
     @date_array = []
     @race_array = []
     @pollster_array = []
@@ -16,11 +15,6 @@ class PollData
     @spread_array = []
 
     @poll_list = []             #just a tool to help with debuggin, ignore
-    @general_graph_data = []
-    @clinton_scores = []
-    @trump_scores = []
-    @spread_list = []
-
     @swing_states = ["Arizona", "New Mexico", "Colorado", "Iowa", "Wisconsin", "Ohio", "New Hampshire", "Pennsylvania", "Virginia", "North Carolina", "Georgia", "Florida" ]
 
     (0..(@parse_page.css('.table-races').xpath('//table').length - 1)).each do |table_num|
@@ -98,234 +92,43 @@ class PollData
       end
     end
 
-    (0..29).each do |array_num|                                 #fill general_graph_data array
-      while true
-        if @general_graph_data[0] && @date_array[array_num].split(" ")[1][0..2] == @general_graph_data.last[0].split(" ")[0] && @date_array[array_num].split(" ")[2].to_i != (@general_graph_data.last[0].split(" ")[1].to_i + 1)
-          new_date = "#{@general_graph_data.last[0].split(" ")[0]} #{0 if (@general_graph_data.last[0].split(" ")[1].to_i + 1).to_s.length == 1}#{@general_graph_data.last[0].split(" ")[1].to_i + 1}"
-          new_cliton_score = @general_graph_data.last[1]         #if date is not in general_graph_data array, adds data with values from previous dates
-          new_trump_score = @general_graph_data.last[2]
-          new_spread = @general_graph_data.last[3]
-          @general_graph_data << [new_date,new_cliton_score, new_trump_score, new_spread]
-        else
-          break
-        end
-      end
-      row = []
-      row << "#{@date_array[array_num].split(" ")[1][0..2]} #{@date_array[array_num].split(" ")[2]}"
-      clinton_day_scores = []
-      trump_day_scores = []
-      score_sum = 0
-      @results_array[array_num].each_index do |poll_num|
-        if @race_array[array_num][poll_num] == "General Election"
-          clinton_day_scores << @results_array[array_num][poll_num].split(" ")[1].to_f
-          score_sum += @results_array[array_num][poll_num].split(" ")[1].to_f
-        end
-      end
-      if score_sum == 0
-        if array_num == 0
-          row << 0                                        #fix later
-        else
-          row << @general_graph_data.last[1]
-        end
-      else
-        row << (score_sum / clinton_day_scores.length).round(1)
-      end
-      score_sum = 0
-      @results_array[array_num].each_index do |poll_num|
-        if @race_array[array_num][poll_num] == "General Election"
-          trump_day_scores << @results_array[array_num][poll_num].split(" ")[3].to_f
-          score_sum += @results_array[array_num][poll_num].split(" ")[3].to_f
-        end
-      end
-      if score_sum == 0
-        if array_num == 0
-          row << 0                                        #fix later
-        else
-          row << @general_graph_data.last[1]
-        end
-      else
-        row << (score_sum / trump_day_scores.length).round(1)
-      end
-      row << (row[1] - row[2]).round(1)
-      @general_graph_data << row
-    end
-
-    @general_graph_data.each do |day|
-      @clinton_scores << day[1]
-      @trump_scores << day[2]
-      @spread_list << day[3]
-    end
 
   end   #end initialize
 
-  def print_polls_all
+  def print_polls(type, input)
     puts "-----------------------------------------------------------------------------------------------------------"
     (0..(@parse_page.css('.table-races').xpath('//table').length / 2 - 1)).each do |print_num|
-      puts @date_array[print_num]                                                  #Printing Date
-      puts
-      puts "Poll Location\t\t\tPollster\t\t\tPoll Results\t\t\tPoll Spread"
-      puts
-      (0..@race_array[print_num].length - 1).each do |race_num|
-        if @race_array[print_num][race_num].length < 8                             #Printing Race Location
-          print "#{@race_array[print_num][race_num]}\t\t\t\t"
-        elsif @race_array[print_num][race_num].length < 16
-          print "#{@race_array[print_num][race_num]}\t\t\t"
-        else
-          print "#{@race_array[print_num][race_num]}\t\t"
-        end
-        if @pollster_array[print_num][race_num].length < 8                         #Printing Pollster Name
-          print "#{@pollster_array[print_num][race_num]}\t\t\t\t"
-        elsif @pollster_array[print_num][race_num].length < 16
-          print "#{@pollster_array[print_num][race_num]}\t\t\t"
-        elsif @pollster_array[print_num][race_num].length < 24
-          print "#{@pollster_array[print_num][race_num]}\t\t"
-        else
-          print "#{@pollster_array[print_num][race_num]}\t"
-        end
-        print "#{@results_array[print_num][race_num].split(" ")[0..1].join(" ")}: #{@results_array[print_num][race_num].split(" ")[2..3].join(" ")}\t\t"                       #Printing Results
-        puts @spread_array[print_num][race_num]                                    #Printing Poll Spread
-      end
-      puts "-----------------------------------------------------------------------------------------------------------"
-    end
-  end #end print_polls
-
-  def print_polls_date(date)
-    puts "-----------------------------------------------------------------------------------------------------------"
-    (0..(@parse_page.css('.table-races').xpath('//table').length / 2 - 1)).each do |print_num|
-      if @date_array[print_num].split(" ")[1..2].join(" ") == date
+      if type == "all" || @race_array[print_num].include?("General Election") && type == "general" || @race_array[print_num].any? {|state| @swing_states.include?(state)} && type == "swing" || @date_array[print_num].split(" ")[1..2].join(" ") == input && type == "date" || @race_array[print_num].include?(input) && type == "state"
         puts @date_array[print_num]                                                  #Printing Date
         puts
         puts "Poll Location\t\t\tPollster\t\t\tPoll Results\t\t\tPoll Spread"
         puts
         (0..@race_array[print_num].length - 1).each do |race_num|
-          if @race_array[print_num][race_num].length < 8                             #Printing Race Location
-            print "#{@race_array[print_num][race_num]}\t\t\t\t"
-          elsif @race_array[print_num][race_num].length < 16
-            print "#{@race_array[print_num][race_num]}\t\t\t"
-          else
-            print "#{@race_array[print_num][race_num]}\t\t"
+          if type == "all" || @race_array[print_num][race_num] == "General Election" && type == "general" || @swing_states.include?(@race_array[print_num][race_num]) && type == "swing" || type == "date" || @race_array[print_num][race_num] == input && type == "state"
+            if @race_array[print_num][race_num].length < 8                             #Printing Race Location
+              print "#{@race_array[print_num][race_num]}\t\t\t\t"
+            elsif @race_array[print_num][race_num].length < 16
+              print "#{@race_array[print_num][race_num]}\t\t\t"
+            else
+              print "#{@race_array[print_num][race_num]}\t\t"
+            end
+            if @pollster_array[print_num][race_num].length < 8                         #Printing Pollster Name
+              print "#{@pollster_array[print_num][race_num]}\t\t\t\t"
+            elsif @pollster_array[print_num][race_num].length < 16
+              print "#{@pollster_array[print_num][race_num]}\t\t\t"
+            elsif @pollster_array[print_num][race_num].length < 24
+              print "#{@pollster_array[print_num][race_num]}\t\t"
+            else
+              print "#{@pollster_array[print_num][race_num]}\t"
+            end
+            print "#{@results_array[print_num][race_num].split(" ")[0..1].join(" ")}: #{@results_array[print_num][race_num].split(" ")[2..3].join(" ")}\t\t"                       #Printing Results
+            puts @spread_array[print_num][race_num]                                    #Printing Poll Spread
           end
-          if @pollster_array[print_num][race_num].length < 8                         #Printing Pollster Name
-            print "#{@pollster_array[print_num][race_num]}\t\t\t\t"
-          elsif @pollster_array[print_num][race_num].length < 16
-            print "#{@pollster_array[print_num][race_num]}\t\t\t"
-          elsif @pollster_array[print_num][race_num].length < 24
-            print "#{@pollster_array[print_num][race_num]}\t\t"
-          else
-            print "#{@pollster_array[print_num][race_num]}\t"
-          end
-          print "#{@results_array[print_num][race_num].split(" ")[0..1].join(" ")}: #{@results_array[print_num][race_num].split(" ")[2..3].join(" ")}\t\t"                       #Printing Results
-          puts @spread_array[print_num][race_num]                                    #Printing Poll Spread
         end
         puts "-----------------------------------------------------------------------------------------------------------"
       end
     end
   end
-
-  def print_polls_state(state)
-    puts "-----------------------------------------------------------------------------------------------------------"
-    (0..(@parse_page.css('.table-races').xpath('//table').length / 2 - 1)).each do |print_num|
-      if @race_array[print_num].include?(state)
-        puts @date_array[print_num]                                                  #Printing Date
-        puts
-        puts "Poll Location\t\t\tPollster\t\t\tPoll Results\t\t\tPoll Spread"
-        puts
-        (0..@race_array[print_num].length - 1).each do |race_num|
-          if @race_array[print_num][race_num] == state
-            if @race_array[print_num][race_num].length < 8                             #Printing Race Location
-              print "#{@race_array[print_num][race_num]}\t\t\t\t"
-            elsif @race_array[print_num][race_num].length < 16
-              print "#{@race_array[print_num][race_num]}\t\t\t"
-            else
-              print "#{@race_array[print_num][race_num]}\t\t"
-            end
-            if @pollster_array[print_num][race_num].length < 8                         #Printing Pollster Name
-              print "#{@pollster_array[print_num][race_num]}\t\t\t\t"
-            elsif @pollster_array[print_num][race_num].length < 16
-              print "#{@pollster_array[print_num][race_num]}\t\t\t"
-            elsif @pollster_array[print_num][race_num].length < 24
-              print "#{@pollster_array[print_num][race_num]}\t\t"
-            else
-              print "#{@pollster_array[print_num][race_num]}\t"
-            end
-            print "#{@results_array[print_num][race_num].split(" ")[0..1].join(" ")}: #{@results_array[print_num][race_num].split(" ")[2..3].join(" ")}\t\t"                       #Printing Results
-            puts @spread_array[print_num][race_num]                                    #Printing Poll Spread
-          end
-        end #end (0..@race_array[print_num].length - 1).each do |race_num|
-        puts "-----------------------------------------------------------------------------------------------------------"
-      end #end if @race_array[print_num].include?(state)
-    end #end (0..(@parse_page.css('.table-races').xpath('//table').length / 2 - 1)).each do |print_num|
-  end #end def
-
-  def print_polls_swing
-    puts "-----------------------------------------------------------------------------------------------------------"
-    (0..(@parse_page.css('.table-races').xpath('//table').length / 2 - 1)).each do |print_num|
-      if @race_array[print_num].any? {|state| @swing_states.include?(state) }
-        puts @date_array[print_num]                                                  #Printing Date
-        puts
-        puts "Poll Location\t\t\tPollster\t\t\tPoll Results\t\t\tPoll Spread"
-        puts
-        (0..@race_array[print_num].length - 1).each do |race_num|
-          if @swing_states.include?(@race_array[print_num][race_num])
-            if @race_array[print_num][race_num].length < 8                             #Printing Race Location
-              print "#{@race_array[print_num][race_num]}\t\t\t\t"
-            elsif @race_array[print_num][race_num].length < 16
-              print "#{@race_array[print_num][race_num]}\t\t\t"
-            else
-              print "#{@race_array[print_num][race_num]}\t\t"
-            end
-            if @pollster_array[print_num][race_num].length < 8                         #Printing Pollster Name
-              print "#{@pollster_array[print_num][race_num]}\t\t\t\t"
-            elsif @pollster_array[print_num][race_num].length < 16
-              print "#{@pollster_array[print_num][race_num]}\t\t\t"
-            elsif @pollster_array[print_num][race_num].length < 24
-              print "#{@pollster_array[print_num][race_num]}\t\t"
-            else
-              print "#{@pollster_array[print_num][race_num]}\t"
-            end
-            print "#{@results_array[print_num][race_num].split(" ")[0..1].join(" ")}: #{@results_array[print_num][race_num].split(" ")[2..3].join(" ")}\t\t"                       #Printing Results
-            puts @spread_array[print_num][race_num]                                    #Printing Poll Spread
-          end
-        end #end (0..@race_array[print_num].length - 1).each do |race_num|
-        puts "-----------------------------------------------------------------------------------------------------------"
-      end #end if @race_array[print_num].include?(state)
-    end #end (0..(@parse_page.css('.table-races').xpath('//table').length / 2 - 1)).each do |print_num|
-  end #end def
-
-  def print_polls_general
-    puts "-----------------------------------------------------------------------------------------------------------"
-    (0..(@parse_page.css('.table-races').xpath('//table').length / 2 - 1)).each do |print_num|
-      if @race_array[print_num].include?("General Election")
-        puts @date_array[print_num]                                                  #Printing Date
-        puts
-        puts "Poll Location\t\t\tPollster\t\t\tPoll Results\t\t\tPoll Spread"
-        puts
-        (0..@race_array[print_num].length - 1).each do |race_num|
-          if @race_array[print_num][race_num] == "General Election"
-            if @race_array[print_num][race_num].length < 8                             #Printing Race Location
-              print "#{@race_array[print_num][race_num]}\t\t\t\t"
-            elsif @race_array[print_num][race_num].length < 16
-              print "#{@race_array[print_num][race_num]}\t\t\t"
-            else
-              print "#{@race_array[print_num][race_num]}\t\t"
-            end
-            if @pollster_array[print_num][race_num].length < 8                         #Printing Pollster Name
-              print "#{@pollster_array[print_num][race_num]}\t\t\t\t"
-            elsif @pollster_array[print_num][race_num].length < 16
-              print "#{@pollster_array[print_num][race_num]}\t\t\t"
-            elsif @pollster_array[print_num][race_num].length < 24
-              print "#{@pollster_array[print_num][race_num]}\t\t"
-            else
-              print "#{@pollster_array[print_num][race_num]}\t"
-            end
-            print "#{@results_array[print_num][race_num].split(" ")[0..1].join(" ")}: #{@results_array[print_num][race_num].split(" ")[2..3].join(" ")}\t\t"                       #Printing Results
-            puts @spread_array[print_num][race_num]                                    #Printing Poll Spread
-          end
-        end #end (0..@race_array[print_num].length - 1).each do |race_num|
-        puts "-----------------------------------------------------------------------------------------------------------"
-      end #end if @race_array[print_num].include?(state)
-    end #end (0..(@parse_page.css('.table-races').xpath('//table').length / 2 - 1)).each do |print_num|
-  end #end def
 
 end #end class
 

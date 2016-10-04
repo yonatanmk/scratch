@@ -25,7 +25,7 @@ def action_filter3
   end
 end
 
-def action_filter6
+def action_filter7
   while true
     system 'clear'
     puts 'Election 2016 Polls'
@@ -39,6 +39,7 @@ def action_filter6
     puts "4. Swing State Polls"
     puts "5. All Polls"
     puts "6. Back"
+    puts "7. Exit"
     action = gets.chomp.downcase
     if action == "1"
       return "1"
@@ -52,14 +53,16 @@ def action_filter6
       return "5"
     elsif action == "6" || action == "back"
       return "6"
+    elsif action == "7" || action == "exit"
+      return "7"
     else
-      puts "Please enter 1, 2, 3, 4, 5, or 6."
+      puts "Please enter 1, 2, 3, 4, 5, 6, or 7."
       gets
     end
   end
 end
 
-def action_filter7
+def action_filter8
   while true
     system 'clear'
     puts 'Election 2016 Polls'
@@ -74,6 +77,7 @@ def action_filter7
     puts "5. Graph General Election Poll Results"
     puts "6. Graph General Election Poll Spread"
     puts "7. Back"
+    puts "8. Exit"
     action = gets.chomp.downcase
     if action == "1"
       return "1"
@@ -89,8 +93,10 @@ def action_filter7
       return "6"
     elsif action == "7" || action == "back"
       return "7"
+    elsif action == "8" || action == "exit"
+      return "8"
     else
-      puts "Please enter 1, 2, 3, 4, 5, 6, or 7."
+      puts "Please enter 1, 2, 3, 4, 5, 6, 7, or 8."
       gets
     end
   end
@@ -116,6 +122,8 @@ def get_date(data)
       return date
     elsif date == "Back"
       return "back"
+    elsif date == "Exit"
+      return "exit"
     else
       puts "Apologies, we do not have any poll data for that date."
       gets
@@ -142,6 +150,8 @@ def get_state(data, description)
       return state
     elsif state == "Back"
       return "back"
+    elsif state == "Exit"
+      return "exit"
     else
       puts "Apologies, we do not have any poll data for that state."
       gets
