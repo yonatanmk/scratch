@@ -4,10 +4,8 @@ def action_filter3
   while true
     system 'clear'
     puts 'Election 2016 Polls'
-    puts 'Main Menu'
-    puts
-    puts "What would you like to do?"
-    puts
+    puts "Main Menu\n "
+    puts "What would you like to do?\n "
     puts "1. View Poll Data"
     puts "2. Graph Poll Data"
     puts "3. Exit"
@@ -28,11 +26,9 @@ end
 def action_filter7
   while true
     system 'clear'
-    puts 'Election 2016 Polls'
-    puts "View Poll Data"
-    puts
-    puts "What polls would you like to view?"
-    puts
+    puts "Election 2016 Polls"
+    puts "View Poll Data\n "
+    puts "What polls would you like to view?\n "
     puts "1. Polls by Date"
     puts "2. Polls by State"
     puts "3. General Election Polls"
@@ -66,10 +62,8 @@ def action_filter8
   while true
     system 'clear'
     puts 'Election 2016 Polls'
-    puts "Graph Poll Data"
-    puts
-    puts "What polls would you like to graph?"
-    puts
+    puts "Graph Poll Data\n "
+    puts "What polls would you like to graph?\n "
     puts "1. Graph Poll Results within a State"
     puts "2. Graph Poll Spread within a State"
     puts "3. Graph Poll Results within Swing States"
@@ -110,10 +104,10 @@ def get_date(data)
   while true
     system 'clear'
     puts 'Election 2016 Polls'
-    puts "Polls by Date"
-    puts
+    puts "Polls by Date\n "
     puts "Please enter a date within the past month."
     puts 'Type "back" if you want to go back.'
+    puts 'Type "exit" to exit.'
     date = gets.chomp.capitalize
     date = date.split(" ")
     date[1].insert(0,"0") if date[1] && date[1].length == 1
@@ -141,10 +135,10 @@ def get_state(data, description)
   while true
     system 'clear'
     puts 'Election 2016 Polls'
-    puts description
-    puts
+    puts "#{description}\n "
     puts "Please enter a state."
     puts 'Type "back" if you want to go back.'
+    puts 'Type "exit" to exit.'
     state = gets.chomp.split.map(&:capitalize).join(' ')
     if state_array.include?(state)
       return state
