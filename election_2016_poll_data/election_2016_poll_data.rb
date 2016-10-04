@@ -3,8 +3,6 @@ require 'Pry'
 require './PollData.rb'
 require './DrawPollGraph.rb'
 require './filters.rb'
-#_______________________________________________________________________________
-
 
 class PollWebscraper
   attr_reader :data, :graph
@@ -58,7 +56,7 @@ class PollWebscraper
           else
             exit
           end
-        end #end action == 1 action2 loop
+        end
       elsif action == "2"
         while true
           action2 = action_filter8
@@ -105,11 +103,11 @@ class PollWebscraper
           else
             exit
           end
-        end #end action = 2 action2 loop
+        end
       else
         break
-      end #end action loop
-    end #end overall loop
+      end
+    end
   end
 
 end

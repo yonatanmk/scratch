@@ -137,10 +137,15 @@ class DrawPollGraph
       graph.title = "#{title} Election 2016 Poll Results"
       graph.dataxy('Clinton', x_data_points = x_axis, clinton_scores, color = '#179EE0')
       graph.dataxy('Trump', x_data_points = x_axis, trump_scores, color = '#FF5D40')
+      graph.minimum_value = ((clinton_scores+trump_scores).min / 5).floor * 5
+      graph.maximum_value = ((clinton_scores+trump_scores).max / 5).ceil * 5
       graph.write("/Users/yehonatanmeschede-krasa/Desktop/#{file_title}_Election_2016_Polls.png")
+      #Pry.start(binding)
     else
       graph.title = "#{title} Election 2016 Poll Spread"
       graph.dataxy('Spread', x_data_points = x_axis, spread_list, color = '#999999')
+      graph.minimum_value = (spread_list.min / 5).floor * 5
+      graph.maximum_value = (spread_list.max / 5).ceil * 5
       graph.write("/Users/yehonatanmeschede-krasa/Desktop/#{file_title}_Election_2016_Poll_Spread.png")
     end
 
