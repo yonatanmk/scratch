@@ -1,7 +1,6 @@
 require 'HTTParty'
 require 'Nokogiri'
 require 'Pry'
-require 'gruff'
 
 class PollData
   attr_reader :page, :parse_page, :date_array, :race_array, :pollster_array, :results_array, :spread_array, :poll_list, :general_graph_data
@@ -16,7 +15,7 @@ class PollData
     @results_array = []
     @spread_array = []
 
-    @poll_list = []
+    @poll_list = []             #just a tool to help with debuggin, ignore
     @general_graph_data = []
     @clinton_scores = []
     @trump_scores = []
@@ -330,9 +329,4 @@ class PollData
 
 end #end class
 
-
-# poll_data = PollData.new
-#
-# poll_data.print_polls_all
-#
 # Pry.start(binding)

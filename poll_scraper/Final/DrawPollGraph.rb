@@ -1,25 +1,28 @@
-require 'HTTParty'
-require 'Nokogiri'
 require 'Pry'
 require 'gruff'
 
 class DrawPollGraph
-  attr_reader :data, :general_graph_data, :state_graph_data, :swing_graph_data, :edited_date_array, :state
+  attr_reader :data, :general_graph_data, :state_graph_data, :swing_graph_data, :edited_date_array
 
   def initialize(data)
     @data = data
     @general_graph_data = []
     @state_graph_data = []
-    @state = ""
     @swing_graph_data = []
     @edited_date_array = []
 
     @data.date_array.each do |date|
-      edited_date_array << "#{date.split(" ")[1][0..2]} #{date.split(" ")[2]}"
+      @edited_date_array << "#{date.split(" ")[1][0..2]} #{date.split(" ")[2]}"
     end
 
+    self.create_graph_data("not_swing", "General Election")
+    self.create_graph_data("swing", "NONE")
+  end
+
+  def create_graph_data(type, state)
+    graph_data = []
     count = 0
-    (0..29).each do |array_num|                                 #fill general_graph_data array
+    (0..(@data.date_array.length - 1)).each do |array_num|                                 #fill general_graph_data array
       row = []
       row << count
       count += 1
@@ -28,7 +31,7 @@ class DrawPollGraph
       trump_day_scores = []
       score_sum = 0
       @data.results_array[array_num].each_index do |poll_num|
-        if @data.race_array[array_num][poll_num] == "General Election"
+        if (@data.race_array[array_num][poll_num] == state && type == "not_swing") || (@data.swing_states.include?(@data.race_array[array_num][poll_num]) if type == "swing")
           clinton_day_scores << @data.results_array[array_num][poll_num].split(" ")[1].to_f
           score_sum += @data.results_array[array_num][poll_num].split(" ")[1].to_f
         end
@@ -38,7 +41,7 @@ class DrawPollGraph
       end
       score_sum = 0
       @data.results_array[array_num].each_index do |poll_num|
-        if @data.race_array[array_num][poll_num] == "General Election"
+        if (@data.race_array[array_num][poll_num] == state && type == "not_swing") || (@data.swing_states.include?(@data.race_array[array_num][poll_num]) if type == "swing")
           trump_day_scores << @data.results_array[array_num][poll_num].split(" ")[3].to_f
           score_sum += @data.results_array[array_num][poll_num].split(" ")[3].to_f
         end
@@ -47,110 +50,30 @@ class DrawPollGraph
         row << (score_sum / trump_day_scores.length).round(1)
       end
       row << (row[2] - row[3]).round(1) if row[2]
-      @general_graph_data << row
+      graph_data << row
     end
 
     30.times do
-      @general_graph_data.each_index do |index|
-        if @general_graph_data[index].length == 2
-          @general_graph_data.delete_at(index)
-        end
-      end
-    end
-#_________________________________________________________________________________
-    count = 0
-    (0..29).each do |array_num|                                 #fill swing_graph_data array
-      row = []
-      row << count
-      count += 1
-      row << @edited_date_array[array_num]
-      clinton_day_scores = []
-      trump_day_scores = []
-      score_sum = 0
-      @data.results_array[array_num].each_index do |poll_num|
-        if @data.swing_states.include?(@data.race_array[array_num][poll_num])
-          clinton_day_scores << @data.results_array[array_num][poll_num].split(" ")[1].to_f
-          score_sum += @data.results_array[array_num][poll_num].split(" ")[1].to_f
-        end
-      end
-      if score_sum != 0
-        row << (score_sum / clinton_day_scores.length).round(1)
-      end
-      score_sum = 0
-      @data.results_array[array_num].each_index do |poll_num|
-        if @data.swing_states.include?(@data.race_array[array_num][poll_num])
-          trump_day_scores << @data.results_array[array_num][poll_num].split(" ")[3].to_f
-          score_sum += @data.results_array[array_num][poll_num].split(" ")[3].to_f
-        end
-      end
-      if score_sum != 0
-        row << (score_sum / trump_day_scores.length).round(1)
-      end
-      row << (row[2] - row[3]).round(1) if row[2]
-      @swing_graph_data << row
-    end
-
-    30.times do
-      @swing_graph_data.each_index do |index|
-        if @swing_graph_data[index].length == 2
-          @swing_graph_data.delete_at(index)
+      graph_data.each_index do |index|
+        if graph_data[index].length == 2
+          graph_data.delete_at(index)
         end
       end
     end
 
-    #Pry.start(binding)
-#_______________________________________________________________________________
-    #Pry.start(binding)
-  end #end initialize
-
-  def create_state_graph_data(state)
-    @state_graph_data = []
-    @state = state
-    count = 0
-    (0..29).each do |array_num|
-      row = []
-      row << count
-      count += 1
-      row << @edited_date_array[array_num]
-      clinton_day_scores = []
-      trump_day_scores = []
-      score_sum = 0
-      @data.results_array[array_num].each_index do |poll_num|
-        if @data.race_array[array_num][poll_num] == state
-          clinton_day_scores << @data.results_array[array_num][poll_num].split(" ")[1].to_f
-          score_sum += @data.results_array[array_num][poll_num].split(" ")[1].to_f
-        end
+    if type == "not_swing"
+      if state == "General Election"
+        @general_graph_data = graph_data
+      else
+        @state_graph_data = graph_data
       end
-      if score_sum != 0
-        row << (score_sum / clinton_day_scores.length).round(1)
-      end
-      score_sum = 0
-      @data.results_array[array_num].each_index do |poll_num|
-        if @data.race_array[array_num][poll_num] == state
-          trump_day_scores << @data.results_array[array_num][poll_num].split(" ")[3].to_f
-          score_sum += @data.results_array[array_num][poll_num].split(" ")[3].to_f
-        end
-      end
-      if score_sum != 0
-        row << (score_sum / trump_day_scores.length).round(1)
-      end
-      row << (row[2] - row[3]).round(1) if row[2]
-      @state_graph_data << row
+    else type == "swing"
+      @swing_graph_data = graph_data
     end
-
-    30.times do
-      state_graph_data.each_index do |index|
-        if state_graph_data[index].length == 2
-          state_graph_data.delete_at(index)
-        end
-      end
-    end
-    #Pry.start(binding)
   end
 
 
-
-  def draw(type, output)
+  def draw(type, output, state)
     clinton_scores = []
     trump_scores = []
     spread_list = []
@@ -163,10 +86,10 @@ class DrawPollGraph
       file_title = "General"
     elsif type == "state"
       dataset = @state_graph_data
-      title = @state
-      file_title = @state.split(" ").join("_")
+      title = state
+      file_title = state.split(" ").join("_")
       if @state_graph_data.length == 1
-        puts "Apologies, there is not enough poll data in #{@state} to graph the poll #{output}."
+        puts "Apologies, there is not enough poll data in #{state} to graph the poll #{output}."
         return
       end
     else
@@ -180,7 +103,6 @@ class DrawPollGraph
       trump_scores << day[3]
       spread_list << day[4]
     end
-
 
     graph = Gruff::Line.new(1400)
 
@@ -222,7 +144,7 @@ class DrawPollGraph
       graph.write("/Users/yehonatanmeschede-krasa/Desktop/#{file_title}_Election_2016_Poll_Spread.png")
     end
 
-    puts "The graph has been outputted to your desktop."
+    puts "We have outputted the graph to your desktop."
   end
 
 end
