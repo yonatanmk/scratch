@@ -1,3 +1,5 @@
+# ♠ ♥ ♦ ♣
+
 class Deck
   attr_accessor :cards_remaining
 

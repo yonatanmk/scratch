@@ -1,7 +1,6 @@
-require 'date'
-require 'httparty'
+a = sprintf("%.2f", "1234.1254").to_f
+sum = 0
+sum += a
+sum += sprintf("%.2f", 0.22).to_f
 
-request_date = DateTime.now.to_s[0..9].delete!("-")
-puts request_date
-
-response = HTTParty.get("https://data.cityofnewyork.us/resource/hc8x-tcnd.json")
+puts sum

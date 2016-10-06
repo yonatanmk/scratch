@@ -3,7 +3,7 @@ require 'Nokogiri'
 require 'Pry'
 
 class PollData
-  attr_reader :page, :parse_page, :date_array, :race_array, :pollster_array, :results_array, :spread_array, :poll_list, :swing_states
+  attr_reader :page, :parse_page, :date_array, :race_array, :pollster_array, :results_array, :spread_array, :poll_list, :swing_states             
 
   def initialize
     @page = HTTParty.get('http://www.realclearpolitics.com/epolls/latest_polls/president/')
