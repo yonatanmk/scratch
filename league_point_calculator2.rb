@@ -140,7 +140,7 @@ while true
   puts "What would you like to do?"
   puts "1. Input Game Results."
   puts "2. View League Rankings."
-  puts "3. Delete A Team From the Roster."
+  puts "3. Delete a Team From the Roster."
   action = action_filter
   puts
   if action == "1"

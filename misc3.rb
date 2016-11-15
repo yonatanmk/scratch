@@ -1,3 +1,17 @@
-array = "Jan 7"
+class Person
+  attr_accessor :address
+  
+  def initialize(name)
+    @name = name
+  end
 
-array ||= self.data.split(/\n/).reject{ |s| s.nil? || s == "" }.map{ |s| s.strip.split(/\s+/) }
+  def greet
+    "Hi there, #{@name}!"
+  end
+
+  def part_ways
+    "Bye now, #{@name}!"
+  end
+
+
+end
