@@ -12,12 +12,12 @@ def sentence_composer(input, dictionary, current_sentence = [], current_structur
     dictionary.each do |word_type, words|
       words.each do |word|
         if input.start_with?(word)
-          output << sentence_composer(input.slice(word.size..-1), dictionary, current_sentence << word, current_structure << word_type)
+          output << sentence_composer(input.slice(word.size..-1), dictionary, [*current_sentence, word], [*current_structure, word_type])
         end
       end
     end
   end
-  return output.flatten
+  return output.flatten.reject{|x| x.nil?}
 end
 
 def valid_sentence?(current_structure)
@@ -32,7 +32,7 @@ dictionary = {
   article: ["a", "ac", "e"]
 }
 print sentence_composer("abcdefg", dictionary)
-# puts '_______'
-# print sentence_composer("abcc", dictionary)
-# puts '_______'
-# print sentence_composer("abcd", dictionary)
+puts
+print sentence_composer("abcc", dictionary)
+puts
+print sentence_composer("abcd", dictionary)
