@@ -1,17 +1,10 @@
 require 'pry'
 
-dictionary = {
-  noun: ["abcd", "c", "def", "h", "ij", "cde"],
-  verb: ["bc", "fg", "g", "hij", "bcd"],
-  article:  ["a", "ac", "e"]
-}
-
-
 def sentence_composer(input, dictionary, current_sentence = [], current_structure = [])
-  output = sentence = []
+  output = []
   if input.length == 0
-    if valid_sentence(current_structure)
-      sentence.push(current_sentence.join(' '));
+    if valid_sentence?(current_structure)
+      return current_sentence.join(' ');
     else
       return nil
     end
@@ -19,27 +12,25 @@ def sentence_composer(input, dictionary, current_sentence = [], current_structur
     dictionary.each do |word_type, words|
       words.each do |word|
         if input.start_with?(word)
-          output.push(sentence_composer(input.slice(word.size..-1), dictionary, current_sentence + [word], current_structure + [word_type]))
+          output << sentence_composer(input.slice(word.size..-1), dictionary, current_sentence << word, current_structure << word_type)
         end
       end
     end
   end
-  binding.pry
-  return output
-  # if output[0].class == Array
-  #   return output.map{|arr| arr[0]}
-  # else
-  #   return output
-  # end
+  return output.flatten
 end
 
-def valid_sentence(current_structure)
+def valid_sentence?(current_structure)
   return current_structure.include?(:verb) &&
     (current_structure.include?(:noun) ||
     current_structure.count(:article) >=2 )
 end
 
-
+dictionary = {
+  noun: ["abcd", "c", "def", "h", "ij", "cde"],
+  verb: ["bc", "fg", "g", "hij", "bcd"],
+  article: ["a", "ac", "e"]
+}
 print sentence_composer("abcdefg", dictionary)
 # puts '_______'
 # print sentence_composer("abcc", dictionary)
