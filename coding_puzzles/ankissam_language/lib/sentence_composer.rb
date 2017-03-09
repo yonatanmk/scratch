@@ -29,13 +29,8 @@ def valid_sentence?(current_structure)
     current_structure.count(:article) >=2 )
 end
 
-dictionary = {
-  noun: ["abcd", "c", "def", "h", "ij", "cde"],
-  verb: ["bc", "fg", "g", "hij", "bcd"],
-  article: ["a", "ac", "e"]
-}
-print sentence_composer("abcdefg", dictionary)
-puts
-print sentence_composer("abcc", dictionary)
-puts
-print sentence_composer("abcd", dictionary)
+# dictionary = {
+#   noun: ["abcd", "c", "def", "h", "ij", "cde"],
+#   verb: ["bc", "fg", "g", "hij", "bcd"],
+#   article: ["a", "ac", "e"]
+# }
